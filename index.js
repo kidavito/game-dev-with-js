@@ -1,31 +1,41 @@
 window.onload = function () {
+  // Canvas:
+  let canvas = document.getElementById("canvas");
+
+  // Context 2D:
+  let context = canvas.getContext("2d");
+
   // Button with id = "jump":
   let btn = document.getElementById("jump");
-  let count = 0;
-
-  // Canvas:
-  var canvas = document.getElementById("canvas");
-  var context = canvas.getContext("2d");
 
   // Initial circle position:
-  var x = 300;
-  var y = 350;
+  let x = 300;
+  let y = 200; // Halve canvas height, at the middle of it.
 
-  // Initial circle:
+  // Initial gravity value:
+  let gravity = 0;
+
+  // Initial time value:
+  let time = Date.now(); // Time snapshot.
+
+  // Initial counter value:
+  let count = 0;
+
+  // Initial counter display:
+  context.font = "25px Arial";
+  context.fillStyle = "white";
+  context.fillText("Count: " + count, 20, 30);
+
+  // Initial circle display:
   // 2 = Full circle.
   context.beginPath();
   context.arc(x, y, 50, 0, 2 * Math.PI);
   context.fillStyle = "green";
   context.fill();
 
-  // Initial the "Count" value:
-  context.font = "25px Arial";
-  context.fillStyle = "white";
-  context.fillText("Count: " + count, 20, 30);
-
-  // Draw function to draw/re-draw object in the canvas:
+  // Draw function to draw/re-draw (update) object in the canvas:
   function draw() {
-    // Clearing the canvas:
+    // Clearing the canvas before re-draw:
     context.clearRect(0, 0, 600, 400);
 
     // Redrawing the circle:
@@ -40,46 +50,58 @@ window.onload = function () {
     context.fillStyle = "white";
     context.fillText("Count: " + count, 20, 30);
 
-    // Return the ball to the bottom after reach the top:
-    if (y <= 25) {
-      (y = 350), (count = 0);
+    // Time passed since this "draw" function called:
+    let timePassed = (Date.now() - time) / 1000;
+    time = Date.now(); // Present time comparison.
+
+    // Add more gravity:
+    if (y <= 350) {
+      gravity += 500 * timePassed;
+      y += gravity * timePassed;
+    }
+    // Note: y = 350 is the floor, y = 50 is the top (+50 is for the ball height).
+
+    // Prevent the ball from passing the top:
+    if (y <= 50) {
+      y = 50;
     }
 
-    // Game loop:
-    window.requestAnimationFrame(draw); // call it continuously as the game loop.
+    // Reset the count when the ball reach floor:
+    if (y >= 350) {
+      y = 350; // Preventing from going down too far.
+      count = 0;
+    }
+
+    // Loop:
+    window.requestAnimationFrame(draw); // Make this draw function stay alive (keep running once it's called).
   }
 
-  // "Jump" Button click handler:
-  btn.onclick = function () {
-    count += 1;
+  // Input actions:
+  function inputActions() {
+    count += 1; // Add 1 to counter.
+    y -= 30; // Power to move higher.
+    gravity = 30; // Update gravity.
+    time = Date.now(); // Update time snapshot.
+    draw(); // Call draw function to update the canvas.
+  }
 
-    // Changing the y position:
-    y -= 25;
-
-    // Call the draw function:
-    draw();
+  // Mouse click handler:
+  canvas.onmousedown = function () {
+    inputActions();
   };
 
-  // Keyboard input handler (Press any keyboard button):
+  // Touch screen handler:
+  canvas.ontouchstart = function () {
+    inputActions();
+  };
+
+  // Any key input handler:
   document.onkeydown = function () {
-    count += 1;
-
-    // Changing the y position:
-    y -= 25;
-
-    // Call the draw function:
-    draw();
+    inputActions();
   };
 
-  // Touch input handler (Touch any part of the screen):
-  // Use "onmousedown" for click action.
-  document.ontouchstart = function () {
-    count += 1;
-
-    // Changing the y position:
-    y -= 25;
-
-    // Call the draw function:
-    draw();
+  // "Jump" button click handler:
+  btn.onclick = function () {
+    inputActions();
   };
 };

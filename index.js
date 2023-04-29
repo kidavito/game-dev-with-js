@@ -15,7 +15,7 @@ window.onload = function () {
   // 2 = Full circle.
   context.beginPath();
   context.arc(x, y, 50, 0, 2 * Math.PI);
-  context.fillStyle = "red";
+  context.fillStyle = "green";
   context.fill();
 
   // Initial the "Count" value:
@@ -32,7 +32,7 @@ window.onload = function () {
     // 2 = Full circle.
     context.beginPath();
     context.arc(x, y, 50, 0, 2 * Math.PI);
-    context.fillStyle = "red";
+    context.fillStyle = "green";
     context.fill();
 
     // Redrawing the "Count" value:
